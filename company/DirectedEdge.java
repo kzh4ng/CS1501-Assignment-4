@@ -22,8 +22,8 @@ public class DirectedEdge {
         if (Double.isNaN(cost)) throw new IllegalArgumentException("Weight is NaN");
         this.v = v;
         this.w = w;
-        this.cost = cost;
-        this.distance = distance;
+        this.setCost(cost);
+        this.setDistance(distance);
     }
 
     /**
@@ -50,6 +50,15 @@ public class DirectedEdge {
         return cost;
     }
     public int distance(){return distance;}
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     /**
      * Returns a string representation of the directed edge.
      * @return a string representation of the directed edge

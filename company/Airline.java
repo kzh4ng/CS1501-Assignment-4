@@ -10,6 +10,8 @@ import java.util.Set;
 
 public class Airline {
 
+    static EdgeWeightedGraph edgeWeightedGraph;
+    static EdgeWeightedDigraph edgeWeightedDigraph;
     public static void main(String[] args) throws Exception {
 	// write your code here
         System.out.println("Please enter the filename of flights");
@@ -22,8 +24,7 @@ public class Airline {
         }
 
         BufferedReader reader;
-        EdgeWeightedGraph edgeWeightedGraph = null;
-        EdgeWeightedDigraph edgeWeightedDigraph = null;
+
 
         try {
             File f = new File(path.toURI());
@@ -102,7 +103,9 @@ public class Airline {
 
                     break;
                 case 2:
-                    //remove();
+                    EdgeWeightedDigraph ewd = digraphWithConstantDistanceWeights(edgeWeightedDigraph);
+                    DijkstraSP d3 = shortestDistancePath(ewd, v);
+                    printShortestPath(ewd, d3, w, "hops");
                     break;
                 default:
                     break;
@@ -110,12 +113,12 @@ public class Airline {
         }
     }
     public static int mainMenu(){
-        System.out.println("Would you like to view all available 'flights', the 'MST', or a shortest path?");
+        System.out.println("Would you like to view all available 'flights', the 'MST', or a shortest 'path'?");
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
         if(input.equals("flights")) return 0;
         else if(input.equals("MST")) return 1;
-        else if(input.equals("remove")) return 2;
+        else if(input.equals("path")) return 2;
         else return 3;
     }
     public static int shortestPathChoice(){
@@ -140,33 +143,44 @@ public class Airline {
 
     public static void printShortestPath(EdgeWeightedDigraph e, DijkstraSP d, int w, String criteria){
         if(d.hasPathTo(w)){
-            System.out.println("Shortest path to " + e.getCityName(w) +" by " + criteria);
+            System.out.println("Shortest path to " + edgeWeightedDigraph.getCityName(w) +" by " + criteria);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            StringBuilder path = new StringBuilder("");
             double price = 0;
             int distance = 0;
             for (DirectedEdge edge : d.pathTo(w)) {
-                String start = e.getCityName(edge.from());
-                String end = e.getCityName(edge.to());
-                int dist = edge.distance();
-                double p = edge.cost();
-                distance += dist;
-                price += p;
-                System.out.println("Start City: " + start + " Destination: " + end + " Price: " + p + " Distance: " + dist);
+                String start = edgeWeightedDigraph.getCityName(edge.from());
+                String end = edgeWeightedDigraph.getCityName(edge.to());
+                if(distance == 0) path.append(end).reverse();                         //reverse cities
+                StringBuilder s = new StringBuilder(start + " -> ").reverse();
+                path.append(s);                                                         //append cities in reverse
+                distance += edge.distance();
+                price += edge.cost();
+                //System.out.println("Start City: " + start + " Destination: " + end + " Price: " + p + " Distance: " + dist);
             }
             if(criteria.equals("price")) System.out.println("Lowest cost: $" + price);
             else if(criteria.equals("distance")) System.out.println("Shortest distance: " + distance);
+            else System.out.println("Fewest hops: " + distance);
+            System.out.println("Path: " + path.reverse().toString());                   //reversed string is path in correct order
         }
         else System.out.println("There is no path to " + e.getCityName(w));
     }
 
+    public static EdgeWeightedDigraph digraphWithConstantDistanceWeights(EdgeWeightedDigraph e){
+        EdgeWeightedDigraph ewd = new EdgeWeightedDigraph(e);
+        for(DirectedEdge directedEdge : ewd.edges()){
+            directedEdge.setDistance(1);
+        }
+        return ewd;
+    }
+
     public static void showFlights(EdgeWeightedGraph e){
         for(Edge edge : e.edges()){
-
                 String start = e.getCityName(edge.either());
                 String end = e.getCityName(edge.other(edge.either()));
                 int dist = edge.distance();
                 double p = edge.cost();
                 System.out.println("Start City: " + start + " Destination: " + end + " Price: " + p + " Distance: "+dist);
-
         }
     }
 

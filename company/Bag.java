@@ -99,6 +99,7 @@ public class Bag<Item> implements Iterable<Item> {
             current = current.next;
             return item;
         }
+
     }
 
 

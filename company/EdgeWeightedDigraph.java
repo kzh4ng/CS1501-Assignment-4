@@ -115,6 +115,10 @@ public class EdgeWeightedDigraph {
      * @return the directed edges incident from vertex <tt>v</tt> as an Iterable
      * @throws IndexOutOfBoundsException unless 0 <= v < V
      */
+    public Bag<DirectedEdge> adjacent(int v) {
+        validateVertex(v);
+        return adj[v];
+    }
     public Iterable<DirectedEdge> adj(int v) {
         validateVertex(v);
         return adj[v];

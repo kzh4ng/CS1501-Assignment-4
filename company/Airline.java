@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -117,9 +118,24 @@ public class Airline {
                 Double price = Double.parseDouble(scanner.nextLine());
                 for (int i = 0; i < edgeWeightedDigraph.V(); i++) {                                                 //for every vertex in the graph
                     DepthFirstPaths dfs = new DepthFirstPaths(edgeWeightedDigraph, i,price);
+                    LinkedList<Arc>[] paths = dfs.getPaths();
+                    for(LinkedList<Arc> l : paths){
+                        if(l == null) break;
+                        Arc n = l.getFirst();
+                        System.out.print(edgeWeightedDigraph.getCityName(n.v()));
+                        System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
+                        for (int j = 1; j < l.size(); j++) {
+                            n = l.get(j);
+                            System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
+                        }
+                        System.out.println();
+                    }
+
+/*
+
                     for (int j = 0; j < edgeWeightedDigraph.V(); j++) {                                             //see if it has a path to every other vertex
                         if (dfs.hasPathTo(j) && i != j) {
-                            System.out.println(edgeWeightedDigraph.getCityName(i) + " to " + edgeWeightedDigraph.getCityName(j));
+                            //System.out.println(edgeWeightedDigraph.getCityName(i) + " to " + edgeWeightedDigraph.getCityName(j));
                             int count = 0;
                             double cost = 0;
                             StringBuilder route = new StringBuilder();
@@ -134,9 +150,10 @@ public class Airline {
                                 count++;
                             }
                             System.out.println(route.reverse().toString());
-                            System.out.println();
+                            //System.out.println();
                         }
-                    }
+                    }*/
+                    System.out.print("");
                 }
                 break;
         }

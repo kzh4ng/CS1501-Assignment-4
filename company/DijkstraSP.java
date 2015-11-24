@@ -8,15 +8,6 @@ public class DijkstraSP {
     private IndexMinPQ<Double> pq;    // priority queue of vertices
     private boolean criteria = false;   //false gives price
 
-    /**
-     * Computes a shortest-paths tree from the source vertex <tt>s</tt> to every other
-     * vertex in the edge-weighted digraph <tt>G</tt>.
-     *
-     * @param  G the edge-weighted digraph
-     * @param  s the source vertex
-     * @throws IllegalArgumentException if an edge weight is negative
-     * @throws IllegalArgumentException unless 0 &le; <tt>s</tt> &le; <tt>V</tt> - 1
-     */
     public DijkstraSP(EdgeWeightedDigraph G, int s, boolean value) {
         this.criteria = value;
         for (DirectedEdge e : G.edges()) {
@@ -72,23 +63,6 @@ public class DijkstraSP {
 
     }
 
-    /**
-     * Returns the length of a shortest path from the source vertex <tt>s</tt> to vertex <tt>v</tt>.
-     * @param  v the destination vertex
-     * @return the length of a shortest path from the source vertex <tt>s</tt> to vertex <tt>v</tt>;
-     *         <tt>Double.POSITIVE_INFINITY</tt> if no such path
-     */
-    public double distTo(int v) {
-        return distTo[v];
-    }
-
-    /**
-     * Returns true if there is a path from the source vertex <tt>s</tt> to vertex <tt>v</tt>.
-     *
-     * @param  v the destination vertex
-     * @return <tt>true</tt> if there is a path from the source vertex
-     *         <tt>s</tt> to vertex <tt>v</tt>; <tt>false</tt> otherwise
-     */
     public boolean hasPathTo(int v) {
         return distTo[v] < Double.POSITIVE_INFINITY;
     }

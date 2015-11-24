@@ -9,12 +9,7 @@ public class EdgeWeightedGraph {
     private int E;
     private Bag<Edge>[] adj;
     private String cityNames[];
-    /**
-     * Initializes an empty edge-weighted graph with <tt>V</tt> vertices and 0 edges.
-     *
-     * @param  V the number of vertices
-     * @throws IllegalArgumentException if <tt>V</tt> < 0
-     */
+
     public EdgeWeightedGraph(int V) {
         if (V < 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
         this.V = V;
@@ -32,11 +27,7 @@ public class EdgeWeightedGraph {
     public String getCityName(int i){
         return cityNames[i];
     }
-    /**
-     * Initializes a new edge-weighted graph that is a deep copy of <tt>G</tt>.
-     *
-     * @param  G the edge-weighted graph to copy
-     */
+
     public EdgeWeightedGraph(EdgeWeightedGraph G) {
         this(G.V());
         this.E = G.E();
@@ -53,36 +44,19 @@ public class EdgeWeightedGraph {
     }
 
 
-    /**
-     * Returns the number of vertices in this edge-weighted graph.
-     *
-     * @return the number of vertices in this edge-weighted graph
-     */
     public int V() {
         return V;
     }
 
-    /**
-     * Returns the number of edges in this edge-weighted graph.
-     *
-     * @return the number of edges in this edge-weighted graph
-     */
     public int E() {
         return E;
     }
 
-    // throw an IndexOutOfBoundsException unless 0 <= v < V
     private void validateVertex(int v) {
         if (v < 0 || v >= V)
             throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
     }
 
-    /**
-     * Adds the undirected edge <tt>e</tt> to this edge-weighted graph.
-     *
-     * @param  e the edge
-     * @throws IndexOutOfBoundsException unless both endpoints are between 0 and V-1
-     */
     public void addEdge(Edge e) {
         int v = e.either();
         int w = e.other(v);
@@ -100,6 +74,10 @@ public class EdgeWeightedGraph {
      * @return the edges incident on vertex <tt>v</tt> as an Iterable
      * @throws IndexOutOfBoundsException unless 0 <= v < V
      */
+    public Bag<Edge> adja(int v) {
+        validateVertex(v);
+        return adj[v];
+    }
     public Iterable<Edge> adj(int v) {
         validateVertex(v);
         return adj[v];

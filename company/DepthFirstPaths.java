@@ -7,8 +7,7 @@ import java.util.Stack;
  * Created by kevin on 11/23/15.
  */
 public class DepthFirstPaths {
-    private boolean[] marked;    // marked[v] = is there an s-v path?
-    private int[] edgeTo;        // edgeTo[v] = last edge on s-v path
+
     private LinkedList<Arc>[] paths;
     private final int s;         // source vertex
     private double price = 0;
@@ -26,8 +25,6 @@ public class DepthFirstPaths {
      */
     public DepthFirstPaths(EdgeWeightedDigraph G, int s, double price) {
         this.s = s;
-        edgeTo = new int[G.V()];
-        marked = new boolean[G.V()];
         maxPrice = price;
         paths =  (LinkedList<Arc>[]) new LinkedList[(int)Math.pow(G.V(),2)];                     //at most there will be v(v-1) edges
         temp = new Arc();
@@ -35,7 +32,6 @@ public class DepthFirstPaths {
         dfs(G, s);
     }
 
-    // depth first search from v
     private void dfs(EdgeWeightedDigraph G, int v) {
         uf = new WeightedQuickUnionUF(9);                       //cycle detection for each new path
         for(Arc a : tempLL){
@@ -46,7 +42,6 @@ public class DepthFirstPaths {
             if(!(uf.find(v)==uf.find(w))) {
                 price = sumPricesStack(prices) + edge.cost();
                 if (price <= maxPrice) {
-                    edgeTo[w] = v;
                     prices.push(edge.cost());
                     temp = new Arc(v, w);
                     tempLL.addLast(temp);
@@ -70,14 +65,6 @@ public class DepthFirstPaths {
         return sum;
     }
 
-    /**
-     * Is there a path between the source vertex <tt>s</tt> and vertex <tt>v</tt>?
-     * @param v the vertex
-     * @return <tt>true</tt> if there is a path, <tt>false</tt> otherwise
-     */
-    public boolean hasPathTo(int v) {
-        return marked[v];
-    }
     public LinkedList<Arc> copy (LinkedList<Arc> ll){
         LinkedList<Arc> copy = new LinkedList<Arc>();
         for(Arc a : ll){
@@ -85,22 +72,6 @@ public class DepthFirstPaths {
             copy.addLast(arc);
         }
         return copy;
-    }
-
-    /**
-     * Returns a path between the source vertex <tt>s</tt> and vertex <tt>v</tt>, or
-     * <tt>null</tt> if no such path.
-     * @param v the vertex
-     * @return the sequence of vertices on a path between the source vertex
-     *   <tt>s</tt> and vertex <tt>v</tt>, as an Iterable
-     */
-    public Iterable<Integer> pathTo(int v) {
-        if (!hasPathTo(v)) return null;
-        Stack<Integer> path = new Stack<Integer>();
-        for (int x = v; x != s; x = edgeTo[x])
-            path.push(x);
-        path.push(s);
-        return path;
     }
 
     public LinkedList<Arc>[] getPaths() {

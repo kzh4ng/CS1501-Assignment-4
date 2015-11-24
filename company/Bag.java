@@ -27,7 +27,7 @@ public class Bag<Item> implements Iterable<Item> {
     private int N;               // number of elements in bag
 
     // helper linked list class
-    private static class Node<Item> {
+    static class Node<Item> {
         private Item item;
         private Node<Item> next;
     }
@@ -70,6 +70,12 @@ public class Bag<Item> implements Iterable<Item> {
         first.item = item;
         first.next = oldfirst;
         N++;
+    }
+    public void shiftFirst(){           //used for remove in main
+        this.first = this.first.next;
+    }
+    public Item getFirst(){
+        return first.item;
     }
 
 

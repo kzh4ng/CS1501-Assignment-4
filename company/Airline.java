@@ -64,102 +64,211 @@ public class Airline {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        int choice = mainMenu();
-        switch (choice) {
-            case 0:
-                showFlights(edgeWeightedGraph);
-                break;
-            case 1:
-                PrimMST mst = new PrimMST(edgeWeightedGraph);
-                showTree(mst, edgeWeightedGraph);
-                break;
-            case 2:
-                int a = 3;
-                while (a == 3) {
-                    a = shortestPathChoice();
-                }
-                int v = -1, w = -1;
-                while (v == -1 || w == -1) {
-                    v = -1;
-                    w = -1;
-                    System.out.println("Enter starting city: ");
-                    Scanner scanner = new Scanner(new InputStreamReader(System.in));
-                    String start = scanner.nextLine();
-                    System.out.println("Enter destination city: ");
-                    String destination = scanner.nextLine();
-                    v = edgeWeightedDigraph.getCityNameIndex(start);                    //returns -1 if not found
-                    w = edgeWeightedDigraph.getCityNameIndex(destination);
-                    if (v == -1) System.out.println("Starting city not found");
-                    if (w == -1) System.out.println("Destination city not found");
-                }
-
-                switch (a) {
-                    case 0:
-                        DijkstraSP d1 = shortestPricePath(edgeWeightedDigraph, v);
-                        printShortestPath(edgeWeightedDigraph, d1, w, "price");
-                        break;
-                    case 1:
-                        DijkstraSP d2 = shortestDistancePath(edgeWeightedDigraph, v);
-                        printShortestPath(edgeWeightedDigraph, d2, w, "distance");
-
-                        break;
-                    case 2:
-                        EdgeWeightedDigraph ewd = digraphWithConstantDistanceWeights(edgeWeightedDigraph);
-                        DijkstraSP d3 = shortestDistancePath(ewd, v);
-                        printShortestPath(ewd, d3, w, "hops");
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            case 3:
-                System.out.println("Enter maximum price: ");
-                Scanner scanner = new Scanner(new InputStreamReader(System.in));
-                Double price = Double.parseDouble(scanner.nextLine());
-                for (int i = 0; i < edgeWeightedDigraph.V(); i++) {                                                 //for every vertex in the graph
-                    DepthFirstPaths dfs = new DepthFirstPaths(edgeWeightedDigraph, i,price);
-                    LinkedList<Arc>[] paths = dfs.getPaths();
-                    for(LinkedList<Arc> l : paths){
-                        if(l == null) break;
-                        Arc n = l.getFirst();
-                        System.out.print(edgeWeightedDigraph.getCityName(n.v()));
-                        System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
-                        for (int j = 1; j < l.size(); j++) {
-                            n = l.get(j);
-                            System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
-                        }
-                        System.out.println();
+        boolean quit = false;
+        while(!quit){
+            int choice = mainMenu();
+            switch (choice) {
+                case 0:
+                    showFlights(edgeWeightedGraph);
+                    break;
+                case 1:
+                    PrimMST mst = new PrimMST(edgeWeightedGraph);
+                    showTree(mst, edgeWeightedGraph);
+                    break;
+                case 2:
+                    int a = 3;
+                    while (a == 3) {
+                        a = shortestPathChoice();
+                    }
+                    int v = -1, w = -1;
+                    while (v == -1 || w == -1) {
+                        v = -1;
+                        w = -1;
+                        System.out.println("Enter starting city: ");
+                        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+                        String start = scanner.nextLine();
+                        System.out.println("Enter destination city: ");
+                        String destination = scanner.nextLine();
+                        v = edgeWeightedDigraph.getCityNameIndex(start);                    //returns -1 if not found
+                        w = edgeWeightedDigraph.getCityNameIndex(destination);
+                        if (v == -1) System.out.println("Starting city not found");
+                        if (w == -1) System.out.println("Destination city or flight not found");
                     }
 
-/*
+                    switch (a) {
+                        case 0:
+                            DijkstraSP d1 = shortestPricePath(edgeWeightedDigraph, v);
+                            printShortestPath(edgeWeightedDigraph, d1, w, "price");
+                            break;
+                        case 1:
+                            DijkstraSP d2 = shortestDistancePath(edgeWeightedDigraph, v);
+                            printShortestPath(edgeWeightedDigraph, d2, w, "distance");
 
-                    for (int j = 0; j < edgeWeightedDigraph.V(); j++) {                                             //see if it has a path to every other vertex
-                        if (dfs.hasPathTo(j) && i != j) {
-                            //System.out.println(edgeWeightedDigraph.getCityName(i) + " to " + edgeWeightedDigraph.getCityName(j));
-                            int count = 0;
-                            double cost = 0;
-                            StringBuilder route = new StringBuilder();
-                            for (int x : dfs.pathTo(j)) {
-                                String end = edgeWeightedDigraph.getCityName(x);
-                                //cost = edgeWeightedDigraph.adjacent()
-                                if(count == 0) route.append(end).reverse();                         //reverse cities
-                                else {
-                                    StringBuilder s = new StringBuilder(end + " -> ").reverse();
-                                    route.append(s);
-                                }
-                                count++;
+                            break;
+                        case 2:
+                            EdgeWeightedDigraph ewd = digraphWithConstantDistanceWeights(edgeWeightedDigraph);
+                            DijkstraSP d3 = shortestDistancePath(ewd, v);
+                            printShortestPath(ewd, d3, w, "hops");
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3:
+                    System.out.println("Enter maximum price: ");
+                    Scanner scanner = new Scanner(new InputStreamReader(System.in));
+                    Double price = Double.parseDouble(scanner.nextLine());
+                    System.out.println();
+                    System.out.println("All flights that cost less than "+price);
+                    for (int i = 0; i < edgeWeightedDigraph.V(); i++) {                                                 //for every vertex in the graph
+                        DepthFirstPaths dfs = new DepthFirstPaths(edgeWeightedDigraph, i,price);
+                        LinkedList<Arc>[] paths = dfs.getPaths();
+                        for(LinkedList<Arc> l : paths){
+                            if(l == null) break;
+                            Arc n = l.getFirst();
+                            System.out.print(edgeWeightedDigraph.getCityName(n.v()));
+                            System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
+                            for (int j = 1; j < l.size(); j++) {
+                                n = l.get(j);
+                                System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
                             }
-                            System.out.println(route.reverse().toString());
-                            //System.out.println();
+                            System.out.println();
                         }
-                    }*/
-                    System.out.print("");
-                }
-                break;
+                    }
+                    break;
+                case 4:
+                    boolean change = true;
+                    while(change){
+                        System.out.println("Enter starting city: ");
+                        scanner = new Scanner(new InputStreamReader(System.in));
+                        String start = scanner.nextLine();
+                        int index = edgeWeightedDigraph.getCityNameIndex(start);
+                        if(index == -1){
+                            System.out.println("Starting city not found: ");
+                            continue;
+                        }
+                        System.out.println("Enter destination city: ");
+                        String destination = scanner.nextLine();
+                        int index2 = edgeWeightedDigraph.getCityNameIndex(destination);
+                        if(index2 == -1){
+                            System.out.println("Destination city or flight not found: ");
+                            continue;
+                        }
+                        Edge ed1 = new Edge();
+                        Edge ed2 = new Edge();
+                        DirectedEdge d = new DirectedEdge();
+                        boolean both1 = false;
+                        boolean both2 = false;
+                        for(Edge e : edgeWeightedGraph.adj(index)){
+                            if(both1 && both2)break;
+                            if(e.either() == index && e.other(e.either())==index2){
+                                ed1 = e;
+                            }
+                            if(e.either() == index2 && e.other(e.either())==index){
+                                ed2 = e;
+                            }
+                        }
+                        for(DirectedEdge de : edgeWeightedDigraph.adj(index)){
+                            if(de.from() == index && de.to()==index2){
+                                d = de;
+                                break;
+                            }
+                        }
+                        System.out.println("Enter cost: ");
+                        scanner = new Scanner(new InputStreamReader(System.in));
+                        double c = Double.parseDouble(scanner.nextLine());
+                        ed1.setCost(c);
+                        ed2.setCost(c);
+                        d.setCost(c);
+                        System.out.println("Enter distance: ");
+                        int dis = Integer.parseInt(scanner.nextLine());
+                        ed1.setDistance(dis);
+                        ed2.setDistance(dis);
+                        d.setDistance(dis);
+
+                        System.out.println("Flight details changed: ");
+                        System.out.println("Start City: " + start + " Destination: " + destination + " Price: " + c + " Distance: "+dis);
+                        change = false;
+                    }
+                    break;
+                case 5:
+                    change = true;
+                    while(change){
+                        System.out.println("Enter starting city: ");
+                        scanner = new Scanner(new InputStreamReader(System.in));
+                        String start = scanner.nextLine();
+                        int index = edgeWeightedDigraph.getCityNameIndex(start);
+                        if(index == -1){
+                            System.out.println("Starting city not found: ");
+                            continue;
+                        }
+                        System.out.println("Enter destination city: ");
+                        String destination = scanner.nextLine();
+                        int index2 = edgeWeightedDigraph.getCityNameIndex(destination);
+                        if(index2 == -1){
+                            System.out.println("Destination city not found: ");
+                            continue;
+                        }
+                        Edge ed1 = new Edge();
+                        Edge ed2 = new Edge();
+                        DirectedEdge d = new DirectedEdge();
+                        for(Edge e : edgeWeightedGraph.adj(index)){
+                            if(e.either() == index && e.other(e.either())==index2){
+                                ed1 = e;
+                                break;
+                            }
+                            if(e.either() == index2 && e.other(e.either())==index){
+                                ed1 = e;
+                                break;
+                            }
+                        }
+                        for(Edge e : edgeWeightedGraph.adj(index2)){
+                            if(e.either() == index2 && e.other(e.either())==index){
+                                ed2 = e;
+                                break;
+                            }
+                            if(e.either() == index && e.other(e.either())==index2){
+                                ed2 = e;
+                                break;
+                            }
+                        }
+                        for(DirectedEdge de : edgeWeightedDigraph.adj(index)) {
+                            if (de.from() == index && de.to() == index2) {
+                                d = de;
+                                break;
+                            }
+                        }
+                        Edge first1 = edgeWeightedGraph.adja(index).getFirst();
+                        Edge first2 = edgeWeightedGraph.adja(index2).getFirst();
+                        DirectedEdge first3 = edgeWeightedDigraph.adjacent(index).getFirst();
+                        if(first1 == ed1){
+//                            edgeWeightedGraph.adja(index) = new Bag<Edge>();
+                        }
+                        if(first2 == ed2){
+
+                        }
+                        if(first3 == d){
+
+                        }
+                        Edge.assignValues(ed1,first1);                                                  //set the values of the deleted edge to the values of first edge
+                        Edge.assignValues(ed2,first2);
+                        DirectedEdge.assignValues(d, first3);
+                        edgeWeightedGraph.adja(index).shiftFirst();                                     //first = next node
+                        edgeWeightedDigraph.adjacent(index).shiftFirst();
+                        System.out.println("Flight deleted: ");
+                        change = false;
+                    }
+                    break;
+                default:
+                    System.out.println("Input not recognized");
+                    System.out.println();
+            }
         }
+
     }
     public static int mainMenu(){
-        System.out.println("Would you like to view all available 'flights', the 'MST', a shortest 'path', flights under a certain 'price', or 'modify' flight details, or 'quit'?");
+        System.out.println();
+        System.out.println("Would you like to view all available 'flights', the 'MST', a shortest 'path', flights under a certain 'price', 'modify' flight details, 'remove' a flight, or 'quit'?");
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
         if(input.equals("flights")) return 0;
@@ -167,8 +276,9 @@ public class Airline {
         else if(input.equals("path")) return 2;
         else if(input.equals("price")) return 3;
         else if(input.equals("modify")) return 4;
+        else if(input.equals("remove")) return 5;
         else if(input.equals("quit"))System.exit(0);
-        return 5;
+        return 6;
     }
     public static int shortestPathChoice(){
         System.out.println("Would you like to view the shortest path by 'price', 'distance', or 'hops'?");
@@ -229,7 +339,7 @@ public class Airline {
                 String end = e.getCityName(edge.other(edge.either()));
                 int dist = edge.distance();
                 double p = edge.cost();
-                System.out.println("Start City: " + start + " Destination: " + end + " Price: " + p + " Distance: "+dist);
+                System.out.println( start + " -> " + end + "\t Price: " + p + "\t Distance: "+dist);
         }
     }
 
@@ -261,7 +371,7 @@ public class Airline {
                     String end = e.getCityName(edge.other(edge.either()));
                     int dist = edge.distance();
                     double p = edge.cost();
-                    System.out.println("Start City: " + start + " Destination: " + end + " Price: " + p + " Distance: "+dist);
+                    System.out.println(start + " -> " + end + "\t Price: " + p + "\t Distance: " + dist);
                 }
             }
             System.out.println();

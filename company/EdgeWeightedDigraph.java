@@ -86,6 +86,10 @@ public class EdgeWeightedDigraph {
         adj[v].add(e);
         E++;
     }
+    public void assignBag(int index, Bag<DirectedEdge> bag){
+        Bag<DirectedEdge> temp = this.adjacent(index);
+        temp = bag;
+    }
 
     public Bag<DirectedEdge> adjacent(int v) {
         validateVertex(v);

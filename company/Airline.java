@@ -64,16 +64,19 @@ public class Airline {
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+        PrintWriter writer = new PrintWriter("flightdata.txt", "UTF-8");
+        writer.println("Input file: "+fileName);
+        writer.println();
         boolean quit = false;
         while(!quit){
             int choice = mainMenu();
             switch (choice) {
                 case 0:
-                    showFlights(edgeWeightedGraph);
+                    showFlights(edgeWeightedGraph,writer);
                     break;
                 case 1:
                     PrimMST mst = new PrimMST(edgeWeightedGraph);
-                    showTree(mst, edgeWeightedGraph);
+                    showTree(mst, edgeWeightedGraph ,writer);
                     break;
                 case 2:
                     int a = 3;
@@ -98,17 +101,16 @@ public class Airline {
                     switch (a) {
                         case 0:
                             DijkstraSP d1 = shortestPricePath(edgeWeightedDigraph, v);
-                            printShortestPath(edgeWeightedDigraph, d1, w, "price");
+                            printShortestPath(edgeWeightedDigraph, d1, w, "price",writer);
                             break;
                         case 1:
                             DijkstraSP d2 = shortestDistancePath(edgeWeightedDigraph, v);
-                            printShortestPath(edgeWeightedDigraph, d2, w, "distance");
-
+                            printShortestPath(edgeWeightedDigraph, d2, w, "distance",writer);
                             break;
                         case 2:
                             EdgeWeightedDigraph ewd = digraphWithConstantDistanceWeights(edgeWeightedDigraph);
                             DijkstraSP d3 = shortestDistancePath(ewd, v);
-                            printShortestPath(ewd, d3, w, "hops");
+                            printShortestPath(ewd, d3, w, "hops",writer);
                             break;
                         default:
                             break;
@@ -119,7 +121,9 @@ public class Airline {
                     Scanner scanner = new Scanner(new InputStreamReader(System.in));
                     Double price = Double.parseDouble(scanner.nextLine());
                     System.out.println();
+                    writer.println();
                     System.out.println("All flights that cost less than "+price);
+                    writer.println("All flights that cost less than "+price);
                     for (int i = 0; i < edgeWeightedDigraph.V(); i++) {                                                 //for every vertex in the graph
                         DepthFirstPaths dfs = new DepthFirstPaths(edgeWeightedDigraph, i,price);
                         LinkedList<Arc>[] paths = dfs.getPaths();
@@ -127,12 +131,16 @@ public class Airline {
                             if(l == null) break;
                             Arc n = l.getFirst();
                             System.out.print(edgeWeightedDigraph.getCityName(n.v()));
+                            writer.print(edgeWeightedDigraph.getCityName(n.v()));
                             System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
+                            writer.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
                             for (int j = 1; j < l.size(); j++) {
                                 n = l.get(j);
                                 System.out.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
+                                writer.print(" -> "+edgeWeightedDigraph.getCityName(n.w()));
                             }
                             System.out.println();
+                            writer.println();
                         }
                     }
                     break;
@@ -187,7 +195,9 @@ public class Airline {
                         d.setDistance(dis);
 
                         System.out.println("Flight details changed: ");
+                        writer.println("Flight details changed: ");
                         System.out.println("Start City: " + start + " Destination: " + destination + " Price: " + c + " Distance: "+dis);
+                        writer.println("Start City: " + start + " Destination: " + destination + " Price: " + c + " Distance: "+dis);
                         change = false;
                     }
                     break;
@@ -212,13 +222,14 @@ public class Airline {
                         Edge ed1 = new Edge();
                         Edge ed2 = new Edge();
                         DirectedEdge d = new DirectedEdge();
+                        DirectedEdge d2 = new DirectedEdge();
                         for(Edge e : edgeWeightedGraph.adj(index)){
                             if(e.either() == index && e.other(e.either())==index2){
                                 ed1 = e;
                                 break;
                             }
                             if(e.either() == index2 && e.other(e.either())==index){
-                                ed1 = e;
+                                ed2 = e;
                                 break;
                             }
                         }
@@ -238,26 +249,50 @@ public class Airline {
                                 break;
                             }
                         }
+                        for(DirectedEdge de : edgeWeightedDigraph.adj(index2)) {
+                            if (de.from() == index2 && de.to() == index) {
+                                d2 = de;
+                                break;
+                            }
+                        }
                         Edge first1 = edgeWeightedGraph.adja(index).getFirst();
                         Edge first2 = edgeWeightedGraph.adja(index2).getFirst();
                         DirectedEdge first3 = edgeWeightedDigraph.adjacent(index).getFirst();
-                        if(first1 == ed1){
-//                            edgeWeightedGraph.adja(index) = new Bag<Edge>();
+                        DirectedEdge first4 = edgeWeightedDigraph.adjacent(index2).getFirst();
+                        if(first1 == ed1){                                                          //if there is only one flight out of that city
+                            Bag<Edge> newBag = new Bag<Edge>();
+                            edgeWeightedGraph.assignBag(index, newBag);
                         }
-                        if(first2 == ed2){
-
+                        else{
+                            Edge.assignValues(ed1,first1);
+                            edgeWeightedGraph.adja(index).shiftFirst();                                     //first = next node
+                        }
+                        if(first2 == ed2){                                                      //check if the node to be deleted is the only node in the bag
+                            Bag<Edge> newBag = new Bag<Edge>();
+                            edgeWeightedGraph.assignBag(index2, newBag);
+                        }
+                        else {
+                            Edge.assignValues(ed2, first2);
                         }
                         if(first3 == d){
-
+                            Bag<DirectedEdge> newBag = new Bag<DirectedEdge>();
+                            edgeWeightedDigraph.assignBag(index, newBag);
                         }
-                        Edge.assignValues(ed1,first1);                                                  //set the values of the deleted edge to the values of first edge
-                        Edge.assignValues(ed2,first2);
-                        DirectedEdge.assignValues(d, first3);
-                        edgeWeightedGraph.adja(index).shiftFirst();                                     //first = next node
-                        edgeWeightedDigraph.adjacent(index).shiftFirst();
-                        System.out.println("Flight deleted: ");
+                        if(first3 == d2){
+                            Bag<DirectedEdge> newBag = new Bag<DirectedEdge>();
+                            edgeWeightedDigraph.assignBag(index, newBag);
+                        }
+                        else{
+                            DirectedEdge.assignValues(d, first3);
+                            edgeWeightedDigraph.adjacent(index).shiftFirst();                           //set the values of the deleted edge to the values of first edge
+                        }
+                        System.out.println("Flight deleted");
                         change = false;
                     }
+                    break;
+                case 6:
+                    writer.close();
+                    System.exit(0);
                     break;
                 default:
                     System.out.println("Input not recognized");
@@ -277,9 +312,10 @@ public class Airline {
         else if(input.equals("price")) return 3;
         else if(input.equals("modify")) return 4;
         else if(input.equals("remove")) return 5;
-        else if(input.equals("quit"))System.exit(0);
-        return 6;
+        else if(input.equals("quit"))return 6;
+        return 7;
     }
+
     public static int shortestPathChoice(){
         System.out.println("Would you like to view the shortest path by 'price', 'distance', or 'hops'?");
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
@@ -300,10 +336,13 @@ public class Airline {
         return d;
     }
 
-    public static void printShortestPath(EdgeWeightedDigraph e, DijkstraSP d, int w, String criteria){
+    public static void printShortestPath(EdgeWeightedDigraph e, DijkstraSP d, int w, String criteria, PrintWriter writer){
         if(d.hasPathTo(w)){
             System.out.println("Shortest path to " + edgeWeightedDigraph.getCityName(w) +" by " + criteria);
+            writer.println("");
+            writer.println("Shortest path to " + edgeWeightedDigraph.getCityName(w) +" by " + criteria);
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            writer.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
             StringBuilder path = new StringBuilder("");
             double price = 0;
             int distance = 0;
@@ -317,12 +356,24 @@ public class Airline {
                 price += edge.cost();
                 //System.out.println("Start City: " + start + " Destination: " + end + " Price: " + p + " Distance: " + dist);
             }
-            if(criteria.equals("price")) System.out.println("Lowest cost: $" + price);
-            else if(criteria.equals("distance")) System.out.println("Shortest distance: " + distance);
-            else System.out.println("Fewest hops: " + distance);
+            if(criteria.equals("price")){
+                System.out.println("Lowest cost: $" + price);
+                writer.println("Lowest cost: $" + price);
+            }
+            else if(criteria.equals("distance")){
+                System.out.println("Shortest distance: " + distance);
+                writer.println("Shortest distance: " + distance);
+            }
+            else{
+                System.out.println("Fewest hops: " + distance);
+                writer.println("Fewest hops: " + distance);
+            }
             System.out.println("Path: " + path.reverse().toString());                   //reversed string is path in correct order
+            writer.println("Path: " + path.reverse().toString());                   //reversed string is path in correct order
         }
-        else System.out.println("There is no path to " + e.getCityName(w));
+        else {
+            System.out.println("There is no path to " + e.getCityName(w));
+        }
     }
 
     public static EdgeWeightedDigraph digraphWithConstantDistanceWeights(EdgeWeightedDigraph e){
@@ -333,17 +384,18 @@ public class Airline {
         return ewd;
     }
 
-    public static void showFlights(EdgeWeightedGraph e){
+    public static void showFlights(EdgeWeightedGraph e, PrintWriter writer){
         for(Edge edge : e.edges()){
                 String start = e.getCityName(edge.either());
                 String end = e.getCityName(edge.other(edge.either()));
                 int dist = edge.distance();
                 double p = edge.cost();
-                System.out.println( start + " -> " + end + "\t Price: " + p + "\t Distance: "+dist);
+                System.out.println( start + " <--> " + end + "\t Price: " + p + "\t Distance: "+dist);
+                writer.println( start + " <--> " + end + "\t Price: " + p + "\t Distance: "+dist);
         }
     }
 
-    public static void showTree(PrimMST mst, EdgeWeightedGraph e){
+    public static void showTree(PrimMST mst, EdgeWeightedGraph e, PrintWriter writer){
         WeightedQuickUnionUF uf= new WeightedQuickUnionUF(e.V());
         for(Edge edge : mst.edges()){
             int v = edge.either(), w = edge.other(v);
@@ -365,6 +417,7 @@ public class Airline {
         int treeNumber = 1;
         for(int x : roots){
             System.out.println("MST "+treeNumber);
+            writer.println("MST "+treeNumber);
             for(Edge edge : mst.edges()){
                 if(x == parents[edge.either()]){
                     String start = e.getCityName(edge.either());
@@ -372,6 +425,7 @@ public class Airline {
                     int dist = edge.distance();
                     double p = edge.cost();
                     System.out.println(start + " -> " + end + "\t Price: " + p + "\t Distance: " + dist);
+                    writer.println(start + " -> " + end + "\t Price: " + p + "\t Distance: " + dist);
                 }
             }
             System.out.println();

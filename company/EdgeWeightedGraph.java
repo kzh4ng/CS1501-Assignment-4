@@ -12,8 +12,8 @@ public class EdgeWeightedGraph {
 
     public EdgeWeightedGraph(int V) {
         if (V < 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
-        this.V = V;
-        this.E = 0;
+        this.setV(V);
+        this.setE(0);
         this.cityNames = new String[V];
         adj = (Bag<Edge>[]) new Bag[V];
         for (int v = 0; v < V; v++) {
@@ -30,7 +30,7 @@ public class EdgeWeightedGraph {
 
     public EdgeWeightedGraph(EdgeWeightedGraph G) {
         this(G.V());
-        this.E = G.E();
+        this.setE(G.E());
         for (int v = 0; v < G.V(); v++) {
             // reverse so that adjacency list is in same order as original
             Stack<Edge> reverse = new Stack<Edge>();
@@ -64,7 +64,7 @@ public class EdgeWeightedGraph {
         validateVertex(w);
         adj[v].add(e);
         adj[w].add(e);
-        E++;
+        setE(E + 1);
     }
 
     /**
@@ -81,6 +81,10 @@ public class EdgeWeightedGraph {
     public Iterable<Edge> adj(int v) {
         validateVertex(v);
         return adj[v];
+    }
+    public void assignBag(int index, Bag<Edge> bag){
+        Bag<Edge> temp = this.adja(index);
+         temp = bag;
     }
 
     /**
@@ -141,4 +145,11 @@ public class EdgeWeightedGraph {
     }
 
 
+    public void setV(int v) {
+        V = v;
+    }
+
+    public void setE(int e) {
+        E = e;
+    }
 }

@@ -33,7 +33,7 @@ public class DepthFirstPaths {
     }
 
     private void dfs(EdgeWeightedDigraph G, int v) {
-        uf = new WeightedQuickUnionUF(9);                       //cycle detection for each new path
+        uf = new WeightedQuickUnionUF(G.V());                       //cycle detection for each new path
         for(Arc a : tempLL){
             uf.union(a.v(),a.w());
         }

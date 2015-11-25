@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 import java.util.Stack;
 
@@ -7,7 +7,7 @@ public class EdgeWeightedDigraph {
 
     private final int V;                // number of vertices in this digraph
     private int E;                      // number of edges in this digraph
-    private Bag<DirectedEdge>[] adj;    // adj[v] = adjacency list for vertex v
+    private DoublyLinkedList<DirectedEdge>[] adj;    // adj[v] = adjacency list for vertex v
     private String cityNames[];
 
     /**
@@ -20,9 +20,9 @@ public class EdgeWeightedDigraph {
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be nonnegative");
         this.V = V;
         this.E = 0;
-        adj = (Bag<DirectedEdge>[]) new Bag[V];
+        adj = (DoublyLinkedList<DirectedEdge>[]) new DoublyLinkedList[V];
         for (int v = 0; v < V; v++)
-            adj[v] = new Bag<DirectedEdge>();
+            adj[v] = new DoublyLinkedList<DirectedEdge>();
         cityNames = new String[V];
     }
     public void setCityName(int i, String name){
@@ -86,12 +86,12 @@ public class EdgeWeightedDigraph {
         adj[v].add(e);
         E++;
     }
-    public void assignBag(int index, Bag<DirectedEdge> bag){
-        Bag<DirectedEdge> temp = this.adjacent(index);
-        temp = bag;
+    public void assignDoublyLinkedList(int index, DoublyLinkedList<DirectedEdge> DoublyLinkedList){
+        DoublyLinkedList<DirectedEdge> temp = this.adjacent(index);
+        temp = DoublyLinkedList;
     }
 
-    public Bag<DirectedEdge> adjacent(int v) {
+    public DoublyLinkedList<DirectedEdge> adjacent(int v) {
         validateVertex(v);
         return adj[v];
     }
@@ -101,7 +101,7 @@ public class EdgeWeightedDigraph {
     }
 
     public Iterable<DirectedEdge> edges() {
-        Bag<DirectedEdge> list = new Bag<DirectedEdge>();
+        DoublyLinkedList<DirectedEdge> list = new DoublyLinkedList<DirectedEdge>();
         for (int v = 0; v < V; v++) {
             for (DirectedEdge e : adj(v)) {
                 list.add(e);

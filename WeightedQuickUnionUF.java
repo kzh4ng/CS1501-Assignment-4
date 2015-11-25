@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 public class WeightedQuickUnionUF {
     private int[] parent;   // parent[i] = parent of i

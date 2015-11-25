@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 public class PrimMST {
     private static final double FLOATING_POINT_EPSILON = 1E-12;

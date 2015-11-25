@@ -1,4 +1,4 @@
-package com.company;
+//package com.company;
 
 import java.util.Stack;
 
@@ -7,7 +7,7 @@ public class EdgeWeightedGraph {
 
     private int V;
     private int E;
-    private Bag<Edge>[] adj;
+    private DoublyLinkedList<Edge>[] adj;
     private String cityNames[];
 
     public EdgeWeightedGraph(int V) {
@@ -15,9 +15,9 @@ public class EdgeWeightedGraph {
         this.setV(V);
         this.setE(0);
         this.cityNames = new String[V];
-        adj = (Bag<Edge>[]) new Bag[V];
+        adj = (DoublyLinkedList<Edge>[]) new DoublyLinkedList[V];
         for (int v = 0; v < V; v++) {
-            adj[v] = new Bag<Edge>();
+            adj[v] = new DoublyLinkedList<Edge>();
         }
     }
 
@@ -74,7 +74,7 @@ public class EdgeWeightedGraph {
      * @return the edges incident on vertex <tt>v</tt> as an Iterable
      * @throws IndexOutOfBoundsException unless 0 <= v < V
      */
-    public Bag<Edge> adja(int v) {
+    public DoublyLinkedList<Edge> adja(int v) {
         validateVertex(v);
         return adj[v];
     }
@@ -82,8 +82,8 @@ public class EdgeWeightedGraph {
         validateVertex(v);
         return adj[v];
     }
-    public void assignBag(int index, Bag<Edge> bag){
-        Bag<Edge> temp = this.adja(index);
+    public void assignBag(int index, DoublyLinkedList<Edge> bag){
+        DoublyLinkedList<Edge> temp = this.adja(index);
          temp = bag;
     }
 
@@ -107,7 +107,7 @@ public class EdgeWeightedGraph {
      * @return all edges in this edge-weighted graph, as an iterable
      */
     public Iterable<Edge> edges() {
-        Bag<Edge> list = new Bag<Edge>();
+        DoublyLinkedList<Edge> list = new DoublyLinkedList<Edge>();
         for (int v = 0; v < V; v++) {
             int selfLoops = 0;
             for (Edge e : adj(v)) {

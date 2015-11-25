@@ -72,6 +72,7 @@ public class EdgeWeightedDigraph {
     public int E() {
         return E;
     }
+    public void setE(int i){this.E = i;}
 
     private void validateVertex(int v) {
         if (v < 0 || v >= V)

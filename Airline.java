@@ -156,43 +156,25 @@ public class Airline {
                         String destination = scanner.nextLine();
                         int index2 = edgeWeightedDigraph.getCityNameIndex(destination);
                         if(index2 == -1){
-                            System.out.println("Destination city or flight not found: ");
+                            System.out.println("Destination city not found: ");
                             continue;
-                        }
-                        Edge ed1 = new Edge();
-                        Edge ed2 = new Edge();
-                        DirectedEdge d = new DirectedEdge();
-                        boolean both1 = false;
-                        boolean both2 = false;
-                        for(Edge e : edgeWeightedGraph.adj(index)){
-                            if(both1 && both2)break;
-                            if(e.either() == index && e.other(e.either())==index2){
-                                ed1 = e;
-                            }
-                            if(e.either() == index2 && e.other(e.either())==index){
-                                ed2 = e;
-                            }
-                        }
-                        for(DirectedEdge de : edgeWeightedDigraph.adj(index)){
-                            if(de.from() == index && de.to()==index2){
-                                d = de;
-                                break;
-                            }
                         }
                         System.out.println("Enter cost: ");
                         scanner = new Scanner(new InputStreamReader(System.in));
                         double c = Double.parseDouble(scanner.nextLine());
-                        ed1.setCost(c);
-                        ed2.setCost(c);
-                        d.setCost(c);
+
                         System.out.println("Enter distance: ");
                         int dis = Integer.parseInt(scanner.nextLine());
-                        ed1.setDistance(dis);
-                        ed2.setDistance(dis);
-                        d.setDistance(dis);
 
-                        System.out.println("Flight details changed: ");
-                        writer.println("Flight details changed: ");
+                        Edge e1 = new Edge(index, index2, c, dis);
+                        DirectedEdge e2 = new DirectedEdge(index, index2, c, dis);
+                        DirectedEdge e3 = new DirectedEdge(index2, index, c, dis);
+                        edgeWeightedGraph.addEdge(e1);
+                        edgeWeightedDigraph.addEdge(e2);
+                        edgeWeightedDigraph.addEdge(e3);
+                        System.out.println("Flight added: ");
+                        writer.println("");
+                        writer.println("Flight added: ");
                         System.out.println("Start City: " + start + " Destination: " + destination + " Price: " + c + " Distance: "+dis);
                         writer.println("Start City: " + start + " Destination: " + destination + " Price: " + c + " Distance: "+dis);
                         change = false;
@@ -261,6 +243,10 @@ public class Airline {
                             System.out.println("Route not found, please try again");
                             continue;
                         }
+                        else{
+                            edgeWeightedGraph.setE(edgeWeightedGraph.E()-1);
+                            edgeWeightedDigraph.setE(edgeWeightedDigraph.E()-1);
+                        }
 
                         System.out.println("Flight deleted");
                         change = false;
@@ -279,14 +265,14 @@ public class Airline {
     }
     public static int mainMenu(){
         System.out.println();
-        System.out.println("Would you like to view all available 'flights', the 'MST', a shortest 'path', flights under a certain 'price', 'modify' flight details, 'remove' a flight, or 'quit'?");
+        System.out.println("Would you like to view all available 'flights', the 'MST', a shortest 'path', flights under a certain 'price', 'add' a flight, 'remove' a flight, or 'quit'?");
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
         if(input.equals("flights")) return 0;
         else if(input.equals("MST")) return 1;
         else if(input.equals("path")) return 2;
         else if(input.equals("price")) return 3;
-        else if(input.equals("modify")) return 4;
+        else if(input.equals("add")) return 4;
         else if(input.equals("remove")) return 5;
         else if(input.equals("quit"))return 6;
         return 7;
